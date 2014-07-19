@@ -7,6 +7,14 @@ class Response
     protected $error;
     protected $content = null;
     
+    private $headers = array();
+
+    private $body;
+
+    private $statusCode;
+
+    private $reasonPhrase;
+
     /**
      * Constructs response
      * 
@@ -21,6 +29,27 @@ class Response
         
         if (is_string($content)) {
             $this->content = $content;
+            
+            if ($content) {
+                while (strpos($content, 'HTTP/1.') === 0) {
+                    list ($header, $content) = explode("\r\n\r\n", $content, 2);
+                }
+                
+                $this->body = $content;
+                
+                $headers = explode("\r\n", $header);
+                
+                $statusLine = array_shift($headers);
+                
+                preg_match('/HTTP\/1\.\d (?P<statusCode>\d{3}) (?P<reasonPhrase>[^\r]*)/', $statusLine, $matches);
+                $this->statusCode = (int) $matches['statusCode'];
+                $this->reasonPhrase = $matches['reasonPhrase'];
+                
+                foreach ($headers as $h) {
+                    list ($name, $value) = explode(": ", $h);
+                    $this->headers[$name] = $value;
+                }
+            } 
         }
     }
     
@@ -79,5 +108,30 @@ class Response
     public function hasError()
     {
         return isset($this->error);
+    }
+
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
+    public function getReasonPhrase()
+    {
+        return $this->reasonPhrase;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function getHeader($name)
+    {
+        return $this->headers[$name];
+    }
+
+    public function getBody()
+    {
+        return $this->body;
     }
 }
