@@ -11,3 +11,6 @@ Desktop.ini
 vendor/
 composer.lock
 test.php
+/.settings/
+/.buildpath
+/.project

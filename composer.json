@@ -1,5 +1,5 @@
 {
-    "name": "stil/curl-easy",
+    "name": "softwarevamp/curl-easy",
     "require": {
         "symfony/event-dispatcher": ">=2.2,<3.0"
     },
